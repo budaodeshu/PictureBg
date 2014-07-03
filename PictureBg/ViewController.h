@@ -19,7 +19,10 @@
     BOOL isEditing;
     UITapGestureRecognizer *singleTap;
 }
+
 @property (nonatomic, assign) IBOutlet UIImageView *backgroundImage;
 @property (nonatomic, assign) IBOutlet UIScrollView *scrollView;
+
 - (void)addButton;
+
 @end
