@@ -27,10 +27,9 @@
 @synthesize backgroundImage;
 @synthesize scrollView;
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+    // Do any additional setup after loading the view, typically from a nib.
     page = 0;
     isEditing = NO;
     addButton = [[LSGridItem alloc] initWithTitle:@"Add" withImageName:@"blueButton.jpg" atIndex:0 editable:NO];
@@ -49,8 +48,7 @@
     [scrollView addGestureRecognizer:singleTap];
 }
 
-- (void)viewDidUnload
-{
+- (void)viewDidUnload {
     self.backgroundImage = nil;
     self.scrollView = nil;
     addButton = nil;
@@ -77,46 +75,38 @@
     [super viewDidDisappear:animated];
 }
 */
-- (void)didReceiveMemoryWarning
-{
+- (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 #pragma mark - UIScrollViewDelegate
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     CGRect frame = self.backgroundImage.frame;
     frame.origin.x = preFrame.origin.x + (preX - scrollView.contentOffset.x)/10;
-    if (frame.origin.x <= 0 && frame.origin.x >scrollView.frame.size.width - frame.size.width)
-    {
+    if (frame.origin.x <= 0 && frame.origin.x >scrollView.frame.size.width - frame.size.width) {
         self.backgroundImage.frame = frame;
     }
 }
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
-{
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
 
 }
 
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
-{
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     preX = scrollView.contentOffset.x;
     preFrame = backgroundImage.frame;
 }
 
-- (void)addButton
-{
+- (void)addButton {
     CGRect frame = CGRectMake(20, 20, 100, 100);
     int n = [gridItems count];
     int row = (n-1)/2;
     int col = (n-1)%2;
     int curpage = (n-1) / ITEMSPERPAGE;
     row = row  % 3;
-    if (n/6 + 1 > 6)
-    {
+    if (n/6 + 1 > 6) {
         return;
-    }
-    else
-    {
+    } else {
         frame.origin.x = frame.origin.x + frame.size.width * col + 20 * col + scrollView.frame.size.width *   curpage;
         frame.origin.y = frame.origin.y + frame.size.height * row + 20 *row;
         
@@ -143,23 +133,20 @@
         addButton.index += 1;
     }
 }
+
 #pragma  mark - LSGridItemDelegate
-- (void)gridItemDidClicked:(LSGridItem *)gridItem
-{
-    if (gridItem.index == [gridItems count]-1)
-    {
+- (void)gridItemDidClicked:(LSGridItem *)gridItem {
+    if (gridItem.index == [gridItems count]-1) {
         [self addButton];
     }
 }
-- (void)gridItemDidDeleted:(LSGridItem *)gridItem atIndex:(NSInteger)index
-{
+- (void)gridItemDidDeleted:(LSGridItem *)gridItem atIndex:(NSInteger)index {
     LSGridItem *item = [gridItems objectAtIndex:index];
     [gridItems removeObjectAtIndex:index];
     [UIView animateWithDuration:0.2 animations:^{
         CGRect lastFrame = item.frame;
         CGRect curFrame;
-        for (int i = index; i < [gridItems count]; i++)
-        {
+        for (int i = index; i < [gridItems count]; i++) {
             LSGridItem *temp = [gridItems objectAtIndex:i];
             curFrame = temp.frame;
             [temp setFrame:lastFrame];
@@ -172,16 +159,14 @@
     item = nil;
 }
 
-- (void)gridItemDidEditingMode:(LSGridItem *)gridItem
-{
+- (void)gridItemDidEditingMode:(LSGridItem *)gridItem {
     for (LSGridItem *item in gridItems) {
         [item enableEditing];
     }
     isEditing = YES;
 }
 
-- (void)gridItemDidMoved:(LSGridItem *)gridItem withLocation:(CGPoint)point moveGrestureRecognizer:(UILongPressGestureRecognizer *)recognizer
-{
+- (void)gridItemDidMoved:(LSGridItem *)gridItem withLocation:(CGPoint)point moveGrestureRecognizer:(UILongPressGestureRecognizer *)recognizer {
     CGRect frame = gridItem.frame;
     CGPoint _point = [recognizer locationInView:self.scrollView];
     CGPoint pointInView = [recognizer locationInView:self.view];
@@ -192,8 +177,7 @@
     NSInteger toIndex = [self indexOfLocation:_point];
     NSInteger fromIndex = gridItem.index;
     
-    if (toIndex != UNVALIDINDEX && toIndex != fromIndex)
-    {
+    if (toIndex != UNVALIDINDEX && toIndex != fromIndex) {
         LSGridItem *moveItem = [gridItems objectAtIndex:toIndex];
         [scrollView sendSubviewToBack:moveItem];
         [UIView animateWithDuration:0.2 animations:^{
@@ -202,21 +186,17 @@
         }];
         [self exchangeItem:fromIndex withPosition:toIndex];
     }
-    if (pointInView.x >= scrollView.frame.size.width - THRESHOLD)
-    {
+    
+    if (pointInView.x >= scrollView.frame.size.width - THRESHOLD) {
         [scrollView scrollRectToVisible:CGRectMake(scrollView.contentOffset.x + scrollView.frame.size.width, 0, scrollView.frame.size.width, scrollView.frame.size.height) animated:YES];
-    }
-    else if (pointInView.x < THRESHOLD)
-    {
+    } else if (pointInView.x < THRESHOLD) {
         [scrollView scrollRectToVisible:CGRectMake(scrollView.contentOffset.x - scrollView.frame.size.width, 0, scrollView.frame.size.width, scrollView.frame.size.height) animated:YES];
     }
 }
-- (void)gridItemEndMoved:(LSGridItem *)gridItem withLocation:(CGPoint)point moveGrestureRecognizer:(UILongPressGestureRecognizer *)recognizer
-{
+- (void)gridItemEndMoved:(LSGridItem *)gridItem withLocation:(CGPoint)point moveGrestureRecognizer:(UILongPressGestureRecognizer *)recognizer {
     CGPoint _point = [recognizer locationInView:self.scrollView];
     NSInteger toIndex = [self indexOfLocation:_point];
-    if (toIndex == UNVALIDINDEX)
-    {
+    if (toIndex == UNVALIDINDEX) {
         toIndex = gridItem.index;
     }
     CGPoint origin = [self orginPointOfIndex:toIndex];
@@ -224,55 +204,46 @@
         gridItem.frame = CGRectMake(origin.x, origin.y, gridItem.frame.size.width, gridItem.frame.size.height);
     }];
 }
-- (void)handleSingleTap:(UITapGestureRecognizer *)gestureRecognizer
-{
-    if (isEditing)
-    {
-        for (LSGridItem *item in gridItems)
-        {
+- (void)handleSingleTap:(UITapGestureRecognizer *)gestureRecognizer {
+    if (isEditing) {
+        for (LSGridItem *item in gridItems) {
             [item disableEditing];
         }
         [addButton disableEditing];
     }
     isEditing = NO;
 }
--(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
-{
-    if (touch.view != scrollView)
-    {
+-(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    if (touch.view != scrollView) {
         return NO;
-    }
-    else
+    } else
         return YES;
 }
+
 #pragma mark - private
-- (NSInteger)indexOfLocation:(CGPoint)location
-{
+- (NSInteger)indexOfLocation:(CGPoint)location {
     NSInteger index;
     NSInteger _page = location.x / 320;
     NSInteger row = location.y / (GRIDHIGHT + 20);
     NSInteger col = (location.x - _page * 320) / (GRIDWITH + 20);
-    if (row >= ROWS || col >= COLUMNS)
-    {
+    if (row >= ROWS || col >= COLUMNS) {
+        return UNVALIDINDEX;
+    } else {
+    	index = ITEMSPERPAGE * _page + row *2 + col;
+    }
+    
+    if (index >= [gridItems count]) {
         return UNVALIDINDEX;
     }
-    index = ITEMSPERPAGE * _page + row *2 + col;
-    if (index >= [gridItems count])
-    {
-        return UNVALIDINDEX;
-    }
+    
     return index;
 }
 
-- (CGPoint)orginPointOfIndex:(NSInteger)index
-{
+- (CGPoint)orginPointOfIndex:(NSInteger)index {
     CGPoint point = CGPointZero;
-    if (index > [gridItems count] || index < 0)
-    {
+    if (index > [gridItems count] || index < 0) {
         return point;
-    }
-    else
-    {
+    } else {
         NSInteger _page = index / ITEMSPERPAGE;
         NSInteger row = (index - _page *ITEMSPERPAGE) / COLUMNS;
         NSInteger col = (index - _page *ITEMSPERPAGE) % COLUMNS;
@@ -283,8 +254,7 @@
     }
 }
 
-- (void)exchangeItem:(NSInteger)oldIndex withPosition:(NSInteger)newIndex
-{
+- (void)exchangeItem:(NSInteger)oldIndex withPosition:(NSInteger)newIndex {
     ((LSGridItem *)[gridItems objectAtIndex:oldIndex]).index = newIndex;
     ((LSGridItem *)[gridItems objectAtIndex:newIndex]).index = oldIndex;
     [gridItems exchangeObjectAtIndex:oldIndex withObjectAtIndex:newIndex];
