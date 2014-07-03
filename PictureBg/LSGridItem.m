@@ -13,8 +13,7 @@
 @synthesize isRemovable;
 @synthesize delegate;
 @synthesize index;
-- (id)initWithFrame:(CGRect)frame
-{
+- (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
@@ -22,11 +21,9 @@
     return self;
 }
 
-- (id)initWithTitle:(NSString *)title withImageName:(NSString *)image atIndex:(NSInteger)aIndex editable:(BOOL)removable
-{
+- (id)initWithTitle:(NSString *)title withImageName:(NSString *)image atIndex:(NSInteger)aIndex editable:(BOOL)removable {
     self = [super initWithFrame:CGRectMake(0, 0, 100, 100)];
-    if (self)
-    {
+    if (self) {
         self.backgroundColor = [UIColor clearColor];
         normalImage = [UIImage imageNamed:image];
         titleText = title;
@@ -46,8 +43,7 @@
         longPressGR = nil;
         [self addSubview:button];
         
-        if (self.isRemovable)
-        {
+        if (self.isRemovable) {
             deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
             float width = 20;
             float height= 20;
@@ -60,48 +56,50 @@
             [self addSubview:deleteButton];
         }
     }
+    
     return self;
 }
 
 #pragma mark - 
-- (void)clickItem:(id)sender
-{
+- (void)clickItem:(id)sender {
     [delegate gridItemDidClicked:self];
 }
 
-- (void)pressedLong:(UILongPressGestureRecognizer *)gestureRecognizer
-{
+- (void)pressedLong:(UILongPressGestureRecognizer *)gestureRecognizer {
     switch (gestureRecognizer.state) {
-        case UIGestureRecognizerStateBegan:
+        case UIGestureRecognizerStateBegan: {
             point = [gestureRecognizer locationInView:self];
             [delegate gridItemDidEditingMode:self];
             [self setAlpha:1.0];
             break;
-            
-        case UIGestureRecognizerStateEnded:
+        }
+        case UIGestureRecognizerStateEnded: {
             point = [gestureRecognizer locationInView:self];
             [delegate gridItemEndMoved:self withLocation:point moveGrestureRecognizer:gestureRecognizer];
             [self setAlpha:0.5];
             break;
+        }
         case UIGestureRecognizerStateFailed:
             break;
-        case UIGestureRecognizerStateChanged:
+        case UIGestureRecognizerStateChanged: {
             [delegate gridItemDidMoved:self withLocation:point moveGrestureRecognizer:gestureRecognizer];
+            break;
+        }
         default:
             break;
     }
 }
 
-- (void)removeButtonClicked:(id)sender
-{
+- (void)removeButtonClicked:(id)sender {
     [delegate gridItemDidDeleted:self atIndex:index];
 }
 
 #pragma mark - Custom Methods
-- (void)enableEditing
-{
-    if (self.isEditing)
+- (void)enableEditing {
+    if (self.isEditing) {
         return;
+    }
+    
     self.isEditing = YES;
     //mark the remove button visible
     deleteButton.hidden = NO;
@@ -118,8 +116,7 @@
     [self.layer addAnimation:shake forKey:@"shakeAnimation"];
 }
 
-- (void)disableEditing
-{
+- (void)disableEditing {
     [self.layer removeAnimationForKey:@"shakeAnimation"];
     [deleteButton setHidden:YES];
     [button setEnabled:YES];
@@ -127,8 +124,7 @@
 }
 
 #pragma mark - Overriding UIView Methods
-- (void)removeFromSuperview
-{
+- (void)removeFromSuperview {
     [UIView animateWithDuration:0.2 animations:^{
         self.alpha = 0.0;
         self.frame = CGRectMake(self.frame.origin.x+50, self.frame.origin.y+50, 0,0);
@@ -137,14 +133,5 @@
         [super removeFromSuperview];
     }];
 }
-
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
-{
-    // Drawing code
-}
-*/
 
 @end
